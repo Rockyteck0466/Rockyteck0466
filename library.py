@@ -1,5 +1,4 @@
 class Library:
-    list=[]
     def __init__(self):
         self.bookslist=dict()
         self.lendedbook=dict()
@@ -15,19 +14,17 @@ class Library:
             self.bookslist[book]=self.bookslist[book]+1
         else:
             self.bookslist[book]=1
-    def lendbook(self):
+    def lendbook(self,lenders,users):
         book=input("Enter the Book Name to Lend the Book:").title()
-        try:
-            if self.bookslist[book]==True:
-                user = input("Enter the User Name Who is Lending the Book:").title()
-                if user in self.lendedbook:
-                    print(f"Sorry {user} has already Lended {book} Book!")
-                else:
-                    self.lendedbook[book]=list.append(user)
-                    self.bookslist[book]=self.bookslist[book]-1
+        print(self.bookslist[book])
+        if book in self.bookslist:
+            user = input("Enter the User Name Who is Lending the Book:").title()
+            if user in self.lendedbook:
+                print(f"Sorry {user} has already Lended {book} Book!")
             else:
-                print(f"{book} Book Not in Shelf!")
-        except:
+                self.bookslist[book]=self.bookslist[book]-1
+                self.lendedbook[book] =lenders[book[users.append(user)]]
+        else:
             print(f"{book} Book Not in Shelf!")
     def returnbook(self):
         book=input("Enter the Book Name to Return:").title()
@@ -43,6 +40,8 @@ class Library:
         print(f"{self.bookslist.pop(book)} Stocked Books Have Been Removed from The Library!")
 
 l=Library()
+lenders=dict()
+users=[]
 while True:
     print("1.Add Book\n2.View Book\n3.Remove Book\n4.Lend Book\n5.Return Book\n6.Exit")
     ch=int(input("Enter the Choice for the Selection:"))
@@ -53,7 +52,8 @@ while True:
     elif ch==3:
         l.deletebook()
     elif ch==4:
-        l.lendbook()
+        l.lendbook(lenders,users)
+        print(lenders)
     elif ch==5:
         l.returnbook()
     elif ch==6:
