@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Self Introduction</title>
+    <style>
+        * {
+background-color:white;
+}
+body{
+margin:0px;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0px;
+  padding:0px;
+  overflow:hidden;
+  background-color:#333;
+  border-radius:0px;
+  width:100%;
+}
+
+li{
+    display: inline;
+    float:left;
+    background-color:#333;
+}
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 20px 25px;
+  text-decoration: none;
+  background-color:#333;
+}
+
+li a:hover {
+  background-color:Green;
+  color: white;
+}
+
+.active {
+  background-color: #04AA6D;
+  color: white;
+}
+div.Input{
+background-color:#333;
+height:60px;
+padding:10px;
+}
+
+label{
+display:inline;
+color:white;
+background-color:#333;
+}
+
+input{
+radius:20px;
+}
+
+button{
+height:25px;
+width:75px;
+border-radius:12px;
+}
+
+button:hover{
+background-color:#E0FFFF;
+color: black;
+}
+
+span.result{
+color:white;
+background-color:#333;
+}
+    </style>
+</head>
+<body>
+<script>
+function ageCalculator() {
+
+    var userinput = document.getElementById("DOB").value;
+    var dob = new Date(userinput);
+    if(userinput==null || userinput==''){
+      document.getElementById("result").innerHTML = "Select Date of Birth For Age Calculation!";
+      return false;
+    }
+    else {
+    var mdate = userinput.toString();
+    var dobYear = parseInt(mdate.substring(0,4), 10);
+    var dobMonth = parseInt(mdate.substring(5,7), 10);
+    var dobDate = parseInt(mdate.substring(8,10), 10);
+    var today = new Date();
+  var birthday = new Date(dobYear, dobMonth-1, dobDate);
+
+    var diffInMillisecond = today.valueOf() - birthday.valueOf();
+    var year_age = Math.floor(diffInMillisecond / 31536000000);
+    var day_age = Math.floor((diffInMillisecond % 31536000000) / 86400000);
+
+    if ((today.getMonth() == birthday.getMonth()) && (today.getDate() == birthday.getDate())) {
+            alert("Same year Match, Happy Bithday Budy");
+        }
+
+     var month_age = Math.floor(day_age/31);
+     day_age = day_age % 31;
+
+     var tMnt= (month_age + (year_age*12));
+     var tDays =(tMnt*30) + day_age;
+
+     if (dob>today) {
+        document.getElementById("result").innerHTML = ("Invalid date input - Please try again!");
+      }
+      else {
+        document.getElementById("result").innerHTML = year_age + " years " + month_age + " months " + day_age + " days"
+      }
+   }
+} //end of javascript calculator code
+</script>
+    <ul>
+        <li><a href="">Image</a></li>
+        <li><a href="">Video</a></li>
+        <li><a href="">Audio</a></li>
+        <li style="float:right" ><a href="">About Me</a></li>
+    </ul>
+    <header>
+    <h1 style="text-align:center">Hariram Reddy Bhavanam- Introduction</h1>
+    </header>
+    <hr>
+    <div style="text-align:center">
+        <img src="Hariram.jpeg" width="220" height="300" align="center"/>
+    </div>
+    <br>
+    <p>
+        This is Hariram Reddy Bhavanam ,I'm from Hyderabad , India.
+        I have completed my bachelors in Electronics and Communication Engineering in Jawaharlal Nehru Technological University.
+        After completing the bachelors i had worked for  Accenture solutions private limited for 18 months and then learned a Python.
+        After that I have also taught for a couple of students what i have learned in python.
+        It helped me a lot in gaining experience in that particular language.
+        Apart from that i have special interest on emerging technologies.
+        And at present I'm pursuing my master's degree in computer technology at EIU
+    </p>
+    <br>
+    <br>
+    <div class="Input" align="center">
+        <label>Date</label>
+        <input class="center-block" type="date" id="DOB">
+        <button type="submit" onclick="ageCalculator()">Calculate</button>
+        <br>
+        <br>
+        <span class="result" style="color:white" id="result"></span>
+    </div>
+
+<div style="text=align:right">
+    <p align="right"><b>© Hariram Reddy Bhavanam. All Rights reserved</b></p>
+</div>
+</body>
