@@ -15,10 +15,11 @@ class Library:
             print(f"{count}  {i['_id']}  {i['Book']}({i['Volume']})")
             count=count+1
         print("---------------------------------------------")
+
     def View_books_lended(self):
         count = 1
         print("---------------------------------------------")
-        for i in self.Database.get_collection('Data').find({}):
+        for i in self.Database.get_collection('LendedUsers').find({}):
             print(f"{count}  {i['_id']}  {i['Book']}({i['Volume']})")
             count = count + 1
         print("---------------------------------------------")
