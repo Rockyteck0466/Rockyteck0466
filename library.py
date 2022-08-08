@@ -10,13 +10,19 @@ class Library:
 
     def viewbooks(self):
         count=1
+        print("---------------------------------------------")
         for i in self.Database.get_collection('Data').find({}):
-            print("---------------------------------------")
-            print(f'S:No: {count}')
-            for k,v in i.items():
-                print(f"{k}:  {v}")
+            print(f"{count}  {i['_id']}  {i['Book']}({i['Volume']})")
             count=count+1
-        print("---------------------------------------")
+        print("---------------------------------------------")
+    def View_books_lended(self):
+        count = 1
+        print("---------------------------------------------")
+        for i in self.Database.get_collection('Data').find({}):
+            print(f"{count}  {i['_id']}  {i['Book']}({i['Volume']})")
+            count = count + 1
+        print("---------------------------------------------")
+
     def addbook(self):
         count=1
         book=input("Enter the Book name to add to Shelf:").title()
@@ -54,7 +60,7 @@ class Library:
                     print(f'{book} Has been Lended By {user}')
 
         except Exception as e:
-            print(f"Exception Created {e}")
+            print(f"{book} is not in the Library please Visit Again for book! Thank You")
 
     def returnbook(self):
         try:
@@ -90,17 +96,19 @@ class Library:
 
 l=Library()
 while True:
-    print("1.Add Book\n2.View Book\n3.Remove Book\n4.Lend Book\n5.Return Book\n6.Exit")
+    print("1.Add Book\n2.View Books Shelf\n3.View Books Lended\n4.Delete Book\n5.Lend Book\n6.Return Book\n7.Exit")
     ch=int(input("Enter the Choice for the Selection:"))
     if ch==1:
         l.addbook()
     elif ch==2:
         l.viewbooks()
     elif ch==3:
-        'l.deletebook()'
+        l.View_books_lended()
     elif ch==4:
-        l.lendbook()
+        l.deletebook()
     elif ch==5:
-        l.returnbook()
+        l.lendbook()
     elif ch==6:
+        l.returnbook()
+    elif ch==7:
         exit()
