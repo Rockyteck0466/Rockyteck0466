@@ -57,23 +57,27 @@ class Library:
             print(f"Exception Created {e}")
 
     def returnbook(self):
-        book=input("Enter the Book Name to Return:").title()
-        print(self.lendedbook[book])
-        user = input("Enter the UserName Used While Lending the Book:").title()
-        if user in self.lendedbook[book]:
-            self.addbook()
-            self.lendedbook[book]=list.remove(user)
-        else:
-            print(f"Sorry {user} not Found In Lender List of {book} Book!")
-    def deletebook(self):
-        book=input("Enter the Book Name To delete from the DataBase:").title()
-        print(f"{self.bookslist.pop(book)} Stocked Books Have Been Removed from The Library!")
+        try:
+            book = input("Enter the Book Name for Lending:").title()
+            searchquery = self.Database.get_collection('LendedUsers').find({"Book": book})
+            searchquery_book = self.Database.get_collection('Data').find({"Book": book})
+            value=[x for x in searchquery]
+            value_book = [x for x in searchquery_book]
+            if len(value) == 0:
+                print(f"{book} which you are Searching to return is Not Lended By Any User!")
+            else:
+                user = input("Enter the User Name Who is Lending the Book:").title()
+                searchquery_user = self.Database.get_collection('LendedUsers').find({"Book": book,"User":user})
+                value_user = [x for x in searchquery_user]
+                if len(value_user)==0:
+                    print(f"{book} has not been Lended By this requesting {user}")
+                else:
+                    count_1 = value_book[0].get("Volume") + 1
+                    self.Database.get_collection('Data').find_one_and_update({"Book": book},{"$set": {"Volume": count_1}})
+                    self.Database.get_collection('LendedUsers').delete_one({"Book": book, "User": user})
 
-    def Delete_book(self):
-        book = input("Enter the Book name to add to Shelf:").title()
-        searchquery = self.Database.get_collection('Data').delete_many({"Book": book})
-
-
+        except Exception as e:
+            print(f"Exception Created {e}")
 
 
 l=Library()
@@ -85,10 +89,10 @@ while True:
     elif ch==2:
         l.viewbooks()
     elif ch==3:
-        l.deletebook()
+        'l.deletebook()'
     elif ch==4:
         l.lendbook()
     elif ch==5:
         l.returnbook()
     elif ch==6:
-        l.Delete_book()
+        exit()
