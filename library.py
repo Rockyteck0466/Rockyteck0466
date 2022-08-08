@@ -12,7 +12,7 @@ class Library:
         count=1
         print("---------------------------------------------")
         for i in self.Database.get_collection('Data').find({}):
-            print(f"{count}  {i['_id']}  {i['Book']}({i['Volume']})")
+            print(f"{count}  {i['Book']}({i['Volume']})")
             count=count+1
         print("---------------------------------------------")
 
@@ -20,7 +20,7 @@ class Library:
         count = 1
         print("---------------------------------------------")
         for i in self.Database.get_collection('LendedUsers').find({}):
-            print(f"{count}  {i['_id']}  {i['Book']}({i['Volume']})")
+            print(f"{count}  {i['Book']}({i['Volume']})")
             count = count + 1
         print("---------------------------------------------")
 
