@@ -79,6 +79,14 @@ class Library:
         except Exception as e:
             print(f"Exception Created {e}")
 
+    def deletebook(self):
+        book = input("Enter the Book Name for Deleting:").title()
+        delete_query=self.Database.get_collection('Data').find({"Book": book})
+        value_del = [x for x in delete_query]
+        if len(value_del)==0:
+            print(f"{book} you are searching to delete is not Is Not in Database!")
+        else:
+            self.Database.get_collection('Data').delete_one({"Book": book})
 
 l=Library()
 while True:
