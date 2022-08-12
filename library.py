@@ -47,6 +47,9 @@ class Library:
         if bool(value_book)==True and value_book[0].get("Volume")>0 and bool(value)==True:
             print(f"{book} Book which you are Requesting is Already Lended By You.")
 
+        elif bool(value_book)==True and value_book[0].get("Volume")==0 and bool(value)==True:
+            print(f"{book} Book Which you are Requesting for Is Out Of Stock and also Lended By You.")
+
         elif bool(value_book) == True and value_book[0].get("Volume")==0:
             print(f"{book} Book which you are Requesting is Out of Stock. Please Check Back Again!")
 
