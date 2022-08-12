@@ -20,7 +20,7 @@ class Library:
         count = 1
         print("---------------------------------------------")
         for i in self.Database.get_collection('LendedUsers').find({}):
-            print(f"{count}  {i['Book']}({i['Volume']})")
+            print(f"{count}  {i['Book']}({i['User']})")
             count = count + 1
         print("---------------------------------------------")
 
@@ -38,30 +38,26 @@ class Library:
 
 
     def lendbook(self):
-        try:
-            book = input("Enter the Book Name for Lending:").title()
-            searchquery = self.Database.get_collection('LendedUsers').find({"Book": book})
-            searchquery_book = self.Database.get_collection('Data').find({"Book": book})
-            value=[x for x in searchquery]
-            value_book = [x for x in searchquery_book]
-            if len(value) == 0:
-                user = input("Enter the User Name Who is Lending the Book:").title()
-                count = value_book[0].get("Volume") - 1
-                self.Database.get_collection('Data').find_one_and_update({"Book": book},{"$set": {"Volume": count}})
-                self.Database.get_collection('LendedUsers').insert_one({"Book":book,"User":user})
-            else:
-                user = input("Enter the User Name Who is Lending the Book:").title()
-                searchquery_user = self.Database.get_collection('LendedUsers').find({"Book": book,"User":user})
-                value_user = [x for x in searchquery_user]
-                if len(value_user)==0:
-                    count_1 = value_book[0].get("Volume") - 1
-                    self.Database.get_collection('Data').find_one_and_update({"Book": book},{"$set": {"Volume":count_1}})
-                    self.Database.get_collection('LendedUsers').insert_one({"Book":book,"User":user})
-                else:
-                    print(f'{book} Has been Lended By {user}')
+        book = input("Enter the Book Name for Lending:").title()
+        user = input("Enter the User Name Who is Lending the Book:").title()
+        searchquery = self.Database.get_collection('LendedUsers').find({"Book": book,"User":user})
+        searchquery_book = self.Database.get_collection('Data').find({"Book": book})
+        value=[x for x in searchquery]
+        value_book = [x for x in searchquery_book]
+        if bool(value_book)==True and value_book[0].get("Volume")>0 and bool(value)==True:
+            print(f"{book} Book which you are Requesting is Already Lended By You.")
 
-        except Exception as e:
-            print(f"{book} is not in the Library please Visit Again for book! Thank You")
+        elif bool(value_book) == True and value_book[0].get("Volume")==0:
+            print(f"{book} Book which you are Requesting is Out of Stock. Please Check Back Again!")
+
+        elif bool(value_book) == False :
+            print(f"{book} Book which you are Requesting is Not Available in This Library!")
+
+        elif bool(value_book)==True and value_book[0].get("Volume")>0 and value==[]:
+            count = value_book[0].get("Volume") - 1
+            self.Database.get_collection('Data').find_one_and_update({"Book": book}, {"$set": {"Volume": count}})
+            self.Database.get_collection('LendedUsers').insert_one({"Book": book, "User": user})
+
 
     def returnbook(self):
         try:
@@ -95,9 +91,12 @@ class Library:
         else:
             self.Database.get_collection('Data').delete_one({"Book": book})
 
+    def deleteAllLendedBooks(self):
+        self.Database.get_collection('LendedUsers').delete_many({})
+
 l=Library()
 while True:
-    print("1.Add Book\n2.View Books Shelf\n3.View Books Lended\n4.Delete Book\n5.Lend Book\n6.Return Book\n7.Exit")
+    print("1.Add Book\n2.View Books Shelf\n3.View Books Lended\n4.Delete Book\n5.Lend Book\n6.Return Book\n7.Delete All Lended Books\n8.Exit")
     ch=int(input("Enter the Choice for the Selection:"))
     if ch==1:
         l.addbook()
@@ -112,4 +111,6 @@ while True:
     elif ch==6:
         l.returnbook()
     elif ch==7:
+        l.deleteAllLendedBooks()
+    elif ch==8:
         exit()
