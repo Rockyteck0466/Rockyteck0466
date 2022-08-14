@@ -1,19 +1,20 @@
 import pymongo
 from tkinter import *
-from tkinter import  ttk
+from tkinter import  ttk,messagebox
 
 
 class Library(Tk):
     def __init__(self,):
         super().__init__()
+        #Main Window Ui
         self.title("Library Management")
         self.geometry('1250x400')
-        self.resizable(0, 0)
+        #self.resizable(0, 0)
         self.mainFrame= LabelFrame(self)
         self.mainFrame.grid(row=0,column=1)
 
-
-        self.label=Label(self.mainFrame,text='Welcome To Library').grid(row=0,column=3)
+        #Labels And Entry Boxes
+        self.label=Label(self.mainFrame,text='Welcome To Library').grid(row=0,column=2)
 
         self.label = Label(self.mainFrame, text="Book Name")
         self.label.grid(row=1, column=0,padx=10,pady=10)
@@ -30,6 +31,7 @@ class Library(Tk):
         self.Collection = self.Database['Data']
         self.Collection_Users = self.Database['LendedUsers']
 
+        #Buttons
         self.button_add_book = Button(self.mainFrame, text='Add Book',command=lambda:self.addbook()).grid(row=1, column=4, padx=10, pady=10)
         self.button_View_book = Button(self.mainFrame,text='View Books',command=lambda:self.viewbooks()).grid(row=2, column=0, padx=10, pady=10)
 
@@ -38,45 +40,55 @@ class Library(Tk):
         self.button_Return_books = Button(self.mainFrame, text='Return Books',command=lambda:self.returnbook()).grid(row=2, column=3, padx=10, pady=10)
         self.button_Delete_books = Button(self.mainFrame, text='Delete Books',command=lambda:self.deletebook()).grid(row=2, column=4, padx=10, pady=10)
 
-        self.frame = ttk.LabelFrame(self)
+        self.frame = ttk.Frame(self)
         self.frame.grid(row=1,column=1,padx=10,pady=10)
 
+        self.treeview_frame = ttk.Frame(self.frame)
+        self.treeview_frame.grid(row=1,column=0)
+
+        self.treeview_lend_frame = ttk.Frame(self.frame)
+        self.treeview_lend_frame.grid(row=1, column=1)
+
+
+        #Book Shelf Treeview
         self.columns = ("S:NO", "Book Name", "Quantity")
-        self.treeview = ttk.Treeview(self.frame, columns=self.columns, show='headings')
+        self.treeview = ttk.Treeview(self.treeview_frame, columns=self.columns, show='headings')
         self.treeview.grid(row=5, column=1, padx=10, pady=10)
         self.treeview.heading("S:NO", text="S:NO")
         self.treeview.heading("Book Name", text="Book Name")
         self.treeview.heading("Quantity", text="Quantity")
         self.treeview.columnconfigure(0, weight=1)
 
+        #Lended Books Shelf Treeview
         self.columns = ("S:NO", "Book Name", "User")
-        self.treeview_lend = ttk.Treeview(self.frame, columns=self.columns, show='headings')
+        self.treeview_lend = ttk.Treeview(self.treeview_lend_frame, columns=self.columns, show='headings')
         self.treeview_lend.grid(row=5, column=2, padx=10, pady=10)
         self.treeview_lend.heading("S:NO", text="S:NO")
         self.treeview_lend.heading("Book Name", text="Book Name")
         self.treeview_lend.heading("User", text="User")
         self.treeview_lend.columnconfigure(1, weight=1)
 
+
+
+
+
+
     def viewbooks(self):
-        main_count=0
         count=1
         self.treeview.delete(*self.treeview.get_children())
         for i in self.Database.get_collection('Data').find({}):
-            self.treeview.insert(parent='', index=main_count, iid=main_count, text='', values=(count,i['Book'],i['Volume']))
+            self.treeview.insert(parent='', index=count-1, iid=count-1, text='', values=(count,i['Book'],i['Volume']))
             count=count+1
-            main_count=main_count+1
 
 
     def View_books_lended(self):
         count = 1
-        main_count = 0
         self.treeview_lend.delete(*self.treeview_lend.get_children())
         for i in self.Database.get_collection('LendedUsers').find({}):
 
-            self.treeview_lend.insert(parent='', index=main_count, iid=main_count, text='', values=(count,i['Book'],i['User']))
+            self.treeview_lend.insert(parent='', index=count-1, iid=count-1, text='', values=(count,i['Book'],i['User']))
 
             count = count + 1
-            main_count = main_count + 1
 
     def addbook(self):
         count=1
@@ -161,7 +173,7 @@ class Library(Tk):
             self.View_books_lended()
 
         except Exception as e:
-            print(f"Exception Created {e}")
+            messagebox.showwarning(title="Exception",message=e)
 
     def deletebook(self):
         book = self.entry_book.get().title()
@@ -169,13 +181,22 @@ class Library(Tk):
         value_del = [x for x in delete_query]
         if len(value_del)==0:
             print(f"{book} you are searching to delete is not Is Not in Database!")
+            self.deleteAllLendedBooks()
             self.entry_book.delete(0, END)
+            self.viewbooks()
+            self.View_books_lended()
         else:
             self.Database.get_collection('Data').delete_one({"Book": book})
+            self.deleteAllLendedBooks()
             self.entry_book.delete(0, END)
+            self.viewbooks()
+            self.View_books_lended()
+
 
     def deleteAllLendedBooks(self):
-        self.Database.get_collection('LendedUsers').delete_many({})
+        book = self.entry_book.get().title()
+        user = self.entry_user.get().title()
+        self.Database.get_collection('LendedUsers').delete_one({"Book": book})
 
 
 
