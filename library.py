@@ -4,12 +4,14 @@ from tkinter import  ttk,messagebox
 
 
 class Library(Tk):
-    def __init__(self,):
+    def __init__(self):
         super().__init__()
         #Main Window Ui
         self.title("Library Management")
         self.geometry('1250x400')
-        #self.resizable(0, 0)
+        self.resizable(0, 0)
+
+        #MainFrame
         self.mainFrame= LabelFrame(self)
         self.mainFrame.grid(row=0,column=1)
 
@@ -67,9 +69,6 @@ class Library(Tk):
         self.treeview_lend.heading("Book Name", text="Book Name")
         self.treeview_lend.heading("User", text="User")
         self.treeview_lend.columnconfigure(1, weight=1)
-
-
-
 
 
 
@@ -198,13 +197,53 @@ class Library(Tk):
         user = self.entry_user.get().title()
         self.Database.get_collection('LendedUsers').delete_one({"Book": book})
 
+class User(Library):
+    def __init__(self):
+        super().__init__()
+        self.server = pymongo.MongoClient('mongodb+srv://Hariram:1khwWsQK8Zw9FwrX@cluster0.lnmsi0i.mongodb.net/test')
+        self.Database = self.server['LibraryManagement']
+        self.Collection = self.Database['Accounts']
+
+    def register(self):
+        user = input('Enter the User Name: ')
+        password = input('Enter the Password: ')
+        query=self.Database.get_collection('Accounts').find({"Username": user, "Password": password})
+        value = [x for x in query]
+        if bool(value)==False:
+            Docs = {"Username": user, "Password": password}
+            self.Document = self.Collection.insert_one(Docs)
+        else:
+            print(f'{user} have Already Account in the Library. Please Use login.')
+
+    def login(self):
+        user = input('Enter the User Name: ')
+        password = input('Enter the Password: ')
+        query = self.Database.get_collection('Accounts').find({"Username": user, "Password": password})
+        value = [x for x in query]
+        if bool(value)==True:
+            l = Library()
+            l.viewbooks()
+            l.View_books_lended()
+            l.mainloop()
+        else:
+            print(f'{user} do not have Account in the library. Please Register.')
+
 
 
 if __name__ == "__main__":
-    l=Library()
-    l.viewbooks()
-    l.View_books_lended()
-    l.mainloop()
+    u = User()
+    while True:
+        print('1.Register\n2.Login\n3.Exit')
+        Ch = int(input("Enter the Choice for the Selection:"))
+        if Ch == 1:
+            u.register()
+        elif Ch == 2:
+            u.login()
+        elif Ch == 3:
+            exit()
+
+
+
 
 
 
