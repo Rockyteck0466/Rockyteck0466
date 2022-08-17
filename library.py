@@ -117,22 +117,22 @@ class Library(Tk):
         value=[x for x in searchquery]
         value_book = [x for x in searchquery_book]
         if bool(value_book)==True and value_book[0].get("Volume")>0 and bool(value)==True:
-            print(f"{book} Book which you are Requesting is Already Lended By You.")
+            messagebox.showwarning(title="Exception", message=f"{book} Book which you are Requesting is Already Lended By You.")
             self.entry_book.delete(0, END)
             self.entry_user.delete(0, END)
 
         elif bool(value_book)==True and value_book[0].get("Volume")==0 and bool(value)==True:
-            print(f"{book} Book Which you are Requesting for Is Out Of Stock and also Lended By You.")
+            messagebox.showwarning(title="Exception", message=f"{book} Book Which you are Requesting for Is Out Of Stock and also Lended By You.")
             self.entry_book.delete(0, END)
             self.entry_user.delete(0, END)
 
         elif bool(value_book) == True and value_book[0].get("Volume")==0:
-            print(f"{book} Book which you are Requesting is Out of Stock. Please Check Back Again!")
+            messagebox.showwarning(title="Exception", message=f"{book} Book which you are Requesting is Out of Stock. Please Check Back Again!")
             self.entry_book.delete(0, END)
             self.entry_user.delete(0, END)
 
         elif bool(value_book) == False :
-            print(f"{book} Book which you are Requesting is Not Available in This Library!")
+            messagebox.showwarning(title="Exception", message=f"{book} Book which you are Requesting is Not Available in This Library!")
             self.entry_book.delete(0, END)
             self.entry_user.delete(0, END)
 
@@ -156,12 +156,12 @@ class Library(Tk):
             value=[x for x in searchquery]
             value_book = [x for x in searchquery_book]
             if bool(value) == False:
-                print(f"{book} which you are Searching to return is Not Lended By Any User!")
+                messagebox.showwarning(title="Exception", message=f"{book} which you are Searching to return is Not Lended By {user}!")
                 self.entry_book.delete(0, END)
                 self.entry_user.delete(0, END)
 
             elif bool(value)== True and bool(value_book)== False:
-                print(f'{book} which you are Trying to Return is removed from Library Permantly.Now Cannot Return.')
+                messagebox.showwarning(title="Exception", message=f'{book} which you are Trying to Return is removed from Library Permantly.Now Cannot Return.')
 
             else:
                 count_1 = value_book[0].get("Volume") + 1
@@ -180,7 +180,7 @@ class Library(Tk):
         delete_query=self.Database.get_collection('Data').find({"Book": book})
         value_del = [x for x in delete_query]
         if len(value_del)==0:
-            print(f"{book} you are searching to delete is not Is Not in Database!")
+            messagebox.showwarning(title="Exception", message=f"{book} you are searching to delete is not Is Not in Database!")
             self.deleteAllLendedBooks()
             self.entry_book.delete(0, END)
             self.viewbooks()
