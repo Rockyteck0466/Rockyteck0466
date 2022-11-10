@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Welcome</title>
+    </head>
+    <style>
+         * {
+            background-color:white;
+            }
+            body{
+                padding: 0px;
+            margin:0px;
+            }
+            h1{
+                padding-top: 25px;
+                background-color:rgba(158, 249, 249, 0.636);
+                margin: 0px;
+                padding-bottom: 25px;
+
+            }
+        
+        form{
+            padding-bottom: 50px;
+        }
+        
+        table, th, td {
+            border: 2px solid;
+        }
+        table,td {
+            height: 20px;
+            text-align: left;
+        }
+        table tr:not(:first-child){
+                cursor: pointer;transition: all .25s ease-in-out;
+            }
+            table tr:not(:first-child):hover{background-color: #ddd;}
+        .floatleft{
+            width: 50%;
+            float: left;
+        }
+        .floatright{
+            width: 50%;
+            float: right;
+        }
+        .container{
+            overflow: hidden;
+            overflow-y: scroll;
+            height: 200px;
+        }
+
+        .outputLable{
+            text-align: center;
+        }
+        button{
+            display:inline;
+            height:40px;
+            width:100px;
+            border-radius:22px;
+
+            }
+
+            button:hover{
+            background-color:#e0ffff;
+            color: black;
+            }
+
+        p,b{
+            padding: 25px 0px;
+            color: rgb(1, 4, 6);
+            background-color: #b9fffffe;
+        }
+    </style>
+    <body>
+        <h1 align="center">Welcome To Library Management</h1>
+        <br>
+        <br>
+        <form align="center" class="form">
+            <span class="Book">
+                Book Name:<input type="text" placeholder="Book Name" id="bookInput" required>
+            </span>
+            <span class="Author">
+                Author Name:<input type="text" placeholder="Author Name" id="authorInput" required>
+            </span>
+            <span>
+                Volume:<input type="number" placeholder="Enter Volume" id="volumeInput">
+            </span>
+            <span class="User">
+                User Name:<input type="text" placeholder="User Name" id="userInput" required>
+            </span>
+            <span>
+                Return Date:<input type="date" placeholder="Pick Date" id="dateInput">
+            </span>
+            <br>
+            <br>
+            <span>
+                <label id="status"></label>
+            </span>
+        </form>
+        
+        <div align="center">
+            <span>
+                <button type="submit" onclick=addBook()>Add Book</button>  
+            </span>
+            <span>
+                <button type="submit" onclick=lendBook()>Lend Book</button>  
+            </span>
+            <span>
+                <button type="submit" onclick=returnBook()>Return Book</button>  
+            </span>
+            <span>
+                <button type="submit" onclick=getAllBooks()>Books</button>  
+            </span>
+            <span>
+                <button type="submit" onclick=getLendedBookDetails()>LendedBooks</button>
+            </span>
+            <span>
+                <button type="submit" onclick=deleteBook()>Delete Book</button>
+            </span>
+            <br>
+            <br>
+        </div>
+        <script>
+            
+            function addBook(){
+                let bookName=document.getElementById("bookInput").value;
+                let authorName=document.getElementById("authorInput").value;
+                let volume=document.getElementById("volumeInput").value;
+                if(bookName!="" && authorName !=""){
+                    let jsonObj={_id:0,
+                    author:authorName,
+                    book:bookName,
+                    volume:volume
+                }
+                fetch("http://librarymanagement-service.herokuapp.com/AddBook",{method:'POST',body:JSON.stringify(jsonObj),headers: {
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }})
+                .then(response=>response.text())
+                .then(data=>{document.getElementById("status").innerHTML=data;
+                document.getElementById("status").style.color="green";
+                    getAllBooks();
+                    getLendedBookDetails();})
+                document.getElementById('bookInput').value = '';
+                document.getElementById('authorInput').value = '';
+                document.getElementById("volumeInput").value = '';
+                document.getElementById("userInput").value = '';
+                
+                }else{
+                    document.getElementById("status").innerHTML='Please Enter the BookName and AuthorName';
+                    document.getElementById("status").style.color="red";
+                }
+                }
+
+            function deleteBook(){
+                let bookName=document.getElementById("bookInput").value;
+                let authorName=document.getElementById("authorInput").value;
+                fetch("https://librarymanagement-service.herokuapp.com/Delete_By_Name/"+bookName+"/"+authorName+"",{method:'DELETE',headers: {
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }})
+                    .then(response=>response.text())
+                    .then(data=>{document.getElementById("status").innerHTML=data;
+                    document.getElementById("status").style.color="red";
+                        getAllBooks();
+                    getLendedBookDetails();})
+                    document.getElementById('bookInput').value = '';
+                    document.getElementById('authorInput').value = '';
+                    
+            }
+
+            function lendBook(){
+                let bookName=document.getElementById("bookInput").value;
+                let authorName=document.getElementById("authorInput").value;
+                let userName=document.getElementById("userInput").value;
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+                today = yyyy + '-'+ mm + '-' + dd;
+                if (bookName!="" && authorName !="" && userName!=""){
+                    let jsonObj={_id:0,
+                    startDate: today,
+                    dueDate: today,
+                    author:authorName,
+                    book:bookName,
+                    user:userName
+                }
+                fetch("http://librarymanagement-service.herokuapp.com/Lend_Book",{method:'POST',body:JSON.stringify(jsonObj),headers: {
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }})
+                    .then(response=>response.text())
+                    .then(data=>{document.getElementById("status").innerHTML=data;
+                    document.getElementById("status").style.color="blue";
+                    getAllBooks();
+                    getLendedBookDetails();})
+                document.getElementById('bookInput').value = '';
+                document.getElementById('authorInput').value = '';
+                document.getElementById('userInput').value = '';
+                
+
+                }else{
+                    document.getElementById("status").innerHTML='Please Enter the BookName and AuthorName and UserName';
+                    document.getElementById("status").style.color="red";
+                }
+                
+            }
+
+            function returnBook(){
+                let bookName=document.getElementById("bookInput").value;
+                let authorName=document.getElementById("authorInput").value;
+                let userName=document.getElementById("userInput").value;
+                let date=document.getElementById("dateInput").value;
+                if(bookName!="" && authorName!="" && userName!="" && date==""){
+                    fetch("http://librarymanagement-service.herokuapp.com/Return_Book/"+userName+"/"+bookName+"/"+authorName+"",{method:'POST',headers: {
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }})
+                .then(response=>response.text())
+                .then(data=>{if(data=="Book Returned"){
+                    document.getElementById("status").innerHTML=data;
+                    document.getElementById("status").style.color="blue";
+                }else{
+                    document.getElementById("status").innerHTML=data;
+                    document.getElementById("status").style.color="Red";
+                } 
+                    getAllBooks();
+                    getLendedBookDetails();})
+                document.getElementById('bookInput').value = '';
+                document.getElementById('authorInput').value = '';
+                document.getElementById('userInput').value = '';
+                
+                }else if(bookName!="" && authorName!="" && userName!="" && date!=""){
+                    fetch("http://librarymanagement-service.herokuapp.com/Return_Book_Custom_Date/"+userName+"/"+bookName+"/"+authorName+"/"+date+"",{method:'POST',headers: {
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }})
+                .then(response=>response.text())
+                .then(data=>{if(data=="Book Returned"){
+                    document.getElementById("status").innerHTML=data;
+                    document.getElementById("status").style.color="blue";
+                }else{
+                    document.getElementById("status").innerHTML=data;
+                    document.getElementById("status").style.color="Red";
+                } 
+                    getAllBooks();
+                    getLendedBookDetails();})
+                document.getElementById('bookInput').value = '';
+                document.getElementById('authorInput').value = '';
+                document.getElementById('userInput').value = '';
+                document.getElementById('dateInput').value='';
+                
+                }else{
+                    document.getElementById("status").innerHTML='Please Enter the BookName and AuthorName and UserName';
+                    document.getElementById("status").style.color="red";
+                }
+
+                
+            }
+
+            function getAllBooks(){
+                fetch("http://librarymanagement-service.herokuapp.com/Find_All_Books").
+                then(response => {
+                    let table = document.getElementById("books");
+                    table.innerHTML = "";
+                    let trh = document.createElement("tr");
+                    let sNoHeader=document.createElement("th");
+                    sNoHeader.innerText="S:NO";
+                    let booksHeader = document.createElement("th");
+                    booksHeader.innerText = "Books";
+                    let authorHeader = document.createElement("th");
+                    authorHeader.innerText = "Author";
+                    let volumeHeader = document.createElement("th");
+                    volumeHeader.innerText = "Volume";
+                    trh.appendChild(sNoHeader);
+                    trh.appendChild(booksHeader);
+                    trh.appendChild(authorHeader);
+                    trh.appendChild(volumeHeader);
+                    table.appendChild(trh);
+                    return response.json();
+                }).then(people => {for(let i=0;i<people.length;i++){
+                    let table = document.getElementById("books");
+                    let tr = document.createElement("tr");  
+                    let sNo=document.createElement("td");
+                    sNo.setAttribute("id", "sNo" + i);
+                    let book = document.createElement("td");
+                    book.setAttribute("id", "book" + i);
+                    let author = document.createElement("td");
+                    author.setAttribute("id", "author" + i);
+                    let volume = document.createElement("td");
+                    volume.setAttribute("id", "volume" + i);
+                    sNo.innerText=i+1;
+                    book.innerText = people[i].book;
+                    author.innerText = people[i].author;
+                    volume.innerText = people[i].volume;
+                    tr.appendChild(sNo);
+                    tr.appendChild(book);
+                    tr.appendChild(author);
+                    tr.appendChild(volume);
+                    table.appendChild(tr);
+                    tr.onclick = function() {
+                        document.getElementById("bookInput").value='';
+                        document.getElementById("authorInput").value='';
+                        document.getElementById("userInput").value='';
+                        document.getElementById("bookInput").value=document.getElementById("book" + i).innerHTML;
+                        document.getElementById("authorInput").value=document.getElementById("author" + i).innerHTML;
+                        
+                    }
+                }
+            }
+        );
+        
+     }
+    setInterval(getAllBooks,10000);
+
+    function getLendedBookDetails(){
+        fetch("http://librarymanagement-service.herokuapp.com/Find_All_Users")
+        .then(response => {
+                let table = document.getElementById("lendedBooksDetails");
+                table.innerHTML = "";
+                let trh = document.createElement("tr");
+                let sNoHeader=document.createElement("th");
+                sNoHeader.innerText="S:NO";
+                let booksHeader = document.createElement("th");
+                booksHeader.innerText = "Books";
+                let authorHeader = document.createElement("th");
+                authorHeader.innerText = "Author";
+                let userHeader = document.createElement("th");
+                userHeader.innerText = "User";
+                let dueDateHeader = document.createElement("th");
+                dueDateHeader.innerText="DueDate";
+                trh.appendChild(sNoHeader);
+                trh.appendChild(booksHeader);
+                trh.appendChild(authorHeader);
+                trh.appendChild(userHeader);
+                trh.appendChild(dueDateHeader);
+                table.appendChild(trh);
+                return response.json();})
+        .then(data=>{for(let i=0;i<data.length;i++){
+                    let table = document.getElementById("lendedBooksDetails");
+                    let tr = document.createElement("tr");
+                    let sNo=document.createElement("td");
+                    let book = document.createElement("td");
+                    book.setAttribute("id", "bookL" + i);
+                    let author = document.createElement("td");
+                    author.setAttribute("id", "authorL" + i);
+                    let user = document.createElement("td");
+                    user.setAttribute("id","userL"+i);
+                    let dueDate = document.createElement("td");
+                    sNo.innerText=i+1;
+                    book.innerText = data[i].book;
+                    author.innerText = data[i].author;
+                    user.innerText = data[i].user;
+                    dueDate.innerText = data[i].dueDate;
+                    tr.appendChild(sNo);
+                    tr.appendChild(book);
+                    tr.appendChild(author);
+                    tr.appendChild(user);
+                    tr.appendChild(dueDate);
+                    table.appendChild(tr);
+                    tr.onclick = function() {
+                        document.getElementById("bookInput").value='';
+                        document.getElementById("authorInput").value='';
+                        document.getElementById("userInput").value='';
+                        document.getElementById("bookInput").value=document.getElementById("bookL" + i).innerHTML;
+                        document.getElementById("authorInput").value=document.getElementById("authorL" + i).innerHTML;
+                        document.getElementById("userInput").value=document.getElementById("userL" + i).innerHTML;
+                    }
+                }
+            });
+    }
+    setInterval(getLendedBookDetails,10000);
+
+    
+    </script>
+    <div align="center" class="container">
+        <div class="floatleft">
+            <u>Books Shelf</u> <br> <br><table id="books">
+            </table>
+        </div>
+        <div  class="floatright">
+            <u>Lended Books Details</u> <br> <br> <table id="lendedBooksDetails">
+            </table>
+        </div>
+    </div>
+    <br>
+    <span class="copyrights">
+        <p align="right"><b>© Hariram Reddy Bhavanam. All Rights reserved</b></p>
+    </span>
+    </body>
+</html>
