@@ -70,6 +70,7 @@
             color: rgb(1, 4, 6);
             background-color: #b9fffffe;
         }
+        
     </style>
     <body>
         <h1 align="center">Welcome To Library Management</h1>
@@ -94,7 +95,7 @@
             <br>
             <br>
             <span>
-                <label id="status"></label>
+                <label id="status" class="fadeOut"></label>
             </span>
         </form>
         
@@ -126,7 +127,7 @@
                 let bookName=document.getElementById("bookInput").value;
                 let authorName=document.getElementById("authorInput").value;
                 let volume=document.getElementById("volumeInput").value;
-                if(bookName!="" && authorName !=""){
+                if(bookName!="" && authorName !="" && volume==""){
                     let jsonObj={_id:0,
                     author:authorName,
                     book:bookName,
@@ -138,33 +139,60 @@
                 .then(response=>response.text())
                 .then(data=>{document.getElementById("status").innerHTML=data;
                 document.getElementById("status").style.color="green";
-                    getAllBooks();
-                    getLendedBookDetails();})
+                setTimeout(fadeOut,5000);
+                getAllBooks();
+                getLendedBookDetails();})
                 document.getElementById('bookInput').value = '';
                 document.getElementById('authorInput').value = '';
                 document.getElementById("volumeInput").value = '';
                 document.getElementById("userInput").value = '';
                 
+                }else if(bookName!="" && authorName !="" && volume!=""){
+                    let jsonObj={_id:0,
+                    author:authorName,
+                    book:bookName,
+                    volume:volume
+                }
+                fetch("http://librarymanagement-service.herokuapp.com/AddBook_Volume",{method:'POST',body:JSON.stringify(jsonObj),headers: {
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }})
+                .then(response=>response.text())
+                .then(data=>{document.getElementById("status").innerHTML=data;
+                document.getElementById("status").style.color="green";
+                setTimeout(fadeOut,5000);
+                getAllBooks();
+                getLendedBookDetails();})
+                document.getElementById('bookInput').value = '';
+                document.getElementById('authorInput').value = '';
+                document.getElementById("volumeInput").value = '';
+                document.getElementById("userInput").value = '';
                 }else{
                     document.getElementById("status").innerHTML='Please Enter the BookName and AuthorName';
                     document.getElementById("status").style.color="red";
+                    setTimeout(fadeOut,5000);
                 }
                 }
 
             function deleteBook(){
                 let bookName=document.getElementById("bookInput").value;
                 let authorName=document.getElementById("authorInput").value;
-                fetch("https://librarymanagement-service.herokuapp.com/Delete_By_Name/"+bookName+"/"+authorName+"",{method:'DELETE',headers: {
+                if(bookName != "" && authorName != ""){
+                    fetch("https://librarymanagement-service.herokuapp.com/Delete_By_Name/"+bookName+"/"+authorName+"",{method:'DELETE',headers: {
                         'Content-type': 'application/json; charset=UTF-8'
                     }})
                     .then(response=>response.text())
                     .then(data=>{document.getElementById("status").innerHTML=data;
                     document.getElementById("status").style.color="red";
-                        getAllBooks();
+                    setTimeout(fadeOut,5000);
+                    getAllBooks();
                     getLendedBookDetails();})
                     document.getElementById('bookInput').value = '';
                     document.getElementById('authorInput').value = '';
-                    
+                }else{
+                    document.getElementById("status").innerHTML='Please Enter the BookName and AuthorName';
+                    document.getElementById("status").style.color="red";
+                    setTimeout(fadeOut,5000);    
+                }        
             }
 
             function lendBook(){
@@ -190,6 +218,7 @@
                     .then(response=>response.text())
                     .then(data=>{document.getElementById("status").innerHTML=data;
                     document.getElementById("status").style.color="blue";
+                    setTimeout(fadeOut,5000);
                     getAllBooks();
                     getLendedBookDetails();})
                 document.getElementById('bookInput').value = '';
@@ -200,6 +229,7 @@
                 }else{
                     document.getElementById("status").innerHTML='Please Enter the BookName and AuthorName and UserName';
                     document.getElementById("status").style.color="red";
+                    setTimeout(fadeOut,5000);    
                 }
                 
             }
@@ -217,9 +247,11 @@
                 .then(data=>{if(data=="Book Returned"){
                     document.getElementById("status").innerHTML=data;
                     document.getElementById("status").style.color="blue";
+                    setTimeout(fadeOut,5000);    
                 }else{
                     document.getElementById("status").innerHTML=data;
                     document.getElementById("status").style.color="Red";
+                    setTimeout(fadeOut,5000);    
                 } 
                     getAllBooks();
                     getLendedBookDetails();})
@@ -235,9 +267,11 @@
                 .then(data=>{if(data=="Book Returned"){
                     document.getElementById("status").innerHTML=data;
                     document.getElementById("status").style.color="blue";
+                    setTimeout(fadeOut,5000);    
                 }else{
                     document.getElementById("status").innerHTML=data;
                     document.getElementById("status").style.color="Red";
+                    setTimeout(fadeOut,5000);   
                 } 
                     getAllBooks();
                     getLendedBookDetails();})
@@ -249,7 +283,8 @@
                 }else{
                     document.getElementById("status").innerHTML='Please Enter the BookName and AuthorName and UserName';
                     document.getElementById("status").style.color="red";
-                }
+                    setTimeout(fadeOut,5000);    
+                }    
 
                 
             }
@@ -366,6 +401,10 @@
             });
     }
     setInterval(getLendedBookDetails,10000);
+
+    function fadeOut(){
+        document.getElementById("status").innerHTML='';
+    }
 
     
     </script>
