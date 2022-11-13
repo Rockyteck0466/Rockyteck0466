@@ -28,7 +28,7 @@ class Library(Tk):
         self.entry_user=Entry(self.mainFrame,width=15)
         self.entry_user.grid(row=1,column=3,padx=10,pady=10)
 
-        self.server = pymongo.MongoClient('mongodb+srv://Hariram:8ttPoNADNpzYG1sv@cluster0.lnmsi0i.mongodb.net/?retryWrites=true&w=majority')
+        self.server = pymongo.MongoClient('')
         self.Database = self.server['LibraryManagement']
         self.Collection = self.Database['Data']
         self.Collection_Users = self.Database['LendedUsers']
