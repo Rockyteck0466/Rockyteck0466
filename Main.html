@@ -118,11 +118,32 @@
             <span>
                 <button type="submit" onclick=deleteBook()>Delete Book</button>
             </span>
+            <span>
+                <button type="submit" onclick=deleteBooksWithSameName()>DBN</button>
+            </span>
             <br>
             <br>
         </div>
         <script>
-            
+            function deleteBooksWithSameName(){
+                let bookName=document.getElementById("bookInput").value;
+                if(bookName!=""){
+                    fetch("https://librarymanagement-service.herokuapp.com/Delete_All_By_Name/"+bookName+"",{method:'DELETE',headers: {
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }})
+                    .then(response=>response.text())
+                    .then(data=>{document.getElementById("status").innerHTML=data;
+                    document.getElementById("status").style.color="red";
+                    setTimeout(fadeOut,5000);
+                    getAllBooks();
+                    getLendedBookDetails();})
+                    document.getElementById('bookInput').value = '';
+                }else{
+                    document.getElementById("status").innerHTML='Please Enter the BookName';
+                    document.getElementById("status").style.color="red";
+                    setTimeout(fadeOut,5000);    
+                }
+            }
             function addBook(){
                 let bookName=document.getElementById("bookInput").value;
                 let authorName=document.getElementById("authorInput").value;
@@ -158,10 +179,18 @@
                     }})
                 .then(response=>response.text())
                 .then(data=>{document.getElementById("status").innerHTML=data;
-                document.getElementById("status").style.color="green";
-                setTimeout(fadeOut,5000);
-                getAllBooks();
-                getLendedBookDetails();})
+                if(volume<0){
+                    document.getElementById("status").style.color="red";
+                    setTimeout(fadeOut,5000);
+                    getAllBooks();
+                    getLendedBookDetails()
+                }else{
+                    document.getElementById("status").style.color="green";
+                    setTimeout(fadeOut,5000);
+                    getAllBooks();
+                    getLendedBookDetails()
+                }
+                ;})
                 document.getElementById('bookInput').value = '';
                 document.getElementById('authorInput').value = '';
                 document.getElementById("volumeInput").value = '';
